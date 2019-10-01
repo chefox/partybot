@@ -15,15 +15,13 @@ import java.time.LocalDate;
 public class BirthDay {
     @Id
     private String name;
-    private Integer month;
-    private Integer day;
+    private Date date;
     public BirthDay() {
     }
 
-    public BirthDay(String name, Integer month, Integer day) {
+    public BirthDay(String name, Date date) {
         this.name = name;
-        this.day = day;
-        this.month = month;
+        this.date=date;
     }
 
 
@@ -31,11 +29,8 @@ public class BirthDay {
         return name;
     }
 
-    public Integer getMonth() {
-        return month;
-    }
 
-    public Integer getDay() {
-        return day;
+    public Date getDate() {
+        return date;
     }
 }
