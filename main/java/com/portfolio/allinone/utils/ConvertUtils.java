@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 
@@ -37,12 +38,7 @@ class ConvertUtils {
         return Collections.singletonList((new InlineKeyboardButton().setText(text.length()<25?text:text.substring(0, 20)+"...").setCallbackData(act)));
     }
 
-    //генерирует объект календаря по числу и месяцу(формат хранения дней рождения)
-    private static Calendar toDate(int d, int m){
-        Calendar def = Calendar.getInstance();
-        def.set(def.get(Calendar.YEAR),m, d, 23,59, 0);
-        return(def);
-    }
+
     //создает список всех дней рождений
     static String getBirthDays(List<BirthDay> all){
         StringBuilder result= new StringBuilder();
@@ -51,8 +47,7 @@ class ConvertUtils {
 
         if(!all.isEmpty()) {
             for (BirthDay b : all) {
-                day=toDate(b.getDay(), b.getMonth());
-                result.append(b.getName()).append(" ").append(dateFormat.format(day.getTime())).append("(осталось дней: ").append(daysTo(day)).append(")\n");
+                result.append(b.getName()).append(" ").append(dateFormat.format(b.getDate().toLocalDate().withYear(LocalDate.now().getYear()))).append("(осталось дней: ").append(Period.between(b.getDate().toLocalDate().withYear(LocalDate.now().getYear()), LocalDate.now()).getDays()).append(")\n");
             }
         }
         return result.length()>0? result.toString() :"Пока ничего нет";
@@ -66,19 +61,20 @@ class ConvertUtils {
         Calendar day;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", myDateFormatSymbols );
 
-        if(!all.findAllByDateAfter(Calendar.getInstance().getTimeInMillis()).isEmpty()) {
+        if(!all.findAll().isEmpty() ){
             assigned.append("====================\nГрядущие события\n====================\n");
-            for (Party p : all.findAllByDateAfter(Calendar.getInstance().getTimeInMillis())) {
+            for (Party p : all.findAll()) {
                 day = Calendar.getInstance();
                 day.setTimeInMillis(p.getDate());
-                assigned.append(p.getName()).append(" ").append(dateFormat.format(day.getTime())).append("(осталось дней: ").append(daysTo(day)).append(")\n");
+                result.append(p.getName()).append(" ").append(dateFormat.format(p.getDate().toLocalDate().withYear(LocalDate.now().getYear()))).append("(осталось дней: ").append(Period.between(b.getDate().toLocalDate().withYear(LocalDate.now().getYear()), LocalDate.now()).getDays()).append(")\n");
             }
         }
 
-        if(!all.findAllByDate((long)0).isEmpty()) {
+        if(!all.findAll().isEmpty()) {
             unassigned.append("====================\nСобытия без даты\n====================\n");
-            for (Party p : all.findAllByDate((long)0)) {
-                unassigned.append(p.getName()).append("\n");
+            for (Party p : all.findAll()) {
+                if(p.getDate()==null){
+                unassigned.append(p.getName()).append("\n");}
             }
         }
         result= unassigned.toString() +assigned;
