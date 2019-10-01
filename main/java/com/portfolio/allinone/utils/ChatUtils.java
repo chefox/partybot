@@ -10,7 +10,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.Calendar;
 import java.util.List;
 
@@ -80,7 +82,7 @@ public class ChatUtils {
 		long daysInt = ((long)days)*1000*60*60*24;
         if(days!=-1) {
 
-            List<Party> p = party.findAllByDateBetween(today, today + daysInt);
+            List<Party> p = party.findAll();
             List<BirthDay> b = birth.findAll();
 
 
@@ -89,34 +91,30 @@ public class ChatUtils {
                 on.append(ConvertUtils.notifyText(on.toString(), days));
                 on.append("\nСобытия:\n");
                 for (Party day : p) {
-                    long i = (day.getDate() - today) / (1000 * 60 * 60 * 24);
-                    on.append(day.getName()).append(days > 1 ? i > 1 ? " (осталось дней " + i + ")\n" : i > 0 ? " (завтра)\n" : " (сегодня)\n" : "\n");
-
+                    Period per = Period.between(day.getDate().toLocalDate().withYear(LocalDate.now().getYear()), LocalDate.now());
+                    if(per.getDays()>=0 && per.getDays()<=days){
+                        on.append("\n"+day.getName()+"\n");
+                    }
                 }
             }
             if (!b.isEmpty()) {
 
                 for (BirthDay day : b) {
 
-                    Calendar toDate = Calendar.getInstance();
-                    toDate.set(Calendar.MONTH, day.getMonth());
-                    toDate.set(Calendar.DATE, day.getDay());
 
-                    long i = (toDate.getTimeInMillis() - today) / (1000 * 60 * 60 * 24);
-
-
-                    if (i >= 0 && i < days) {
+                    Period per = Period.between(day.getDate().toLocalDate().withYear(LocalDate.now().getYear()), LocalDate.now());
+                    if (per.getDays() >= 0 && per.getDays() < days) {
                         on.append(ConvertUtils.notifyText(on.toString(), days));
                         if(!on.toString().contains("\nДни рождения:\n") ){
                             on.append("\nДни рождения:\n");}
-                        on.append(day.getName()).append(i > 1 ? " (осталось дней " + i + ")\n" : i > 0 ? " (завтра)\n" : " (сегодня)\n" );
+                        on.append(day.getName()).append(per.getDays() > 1 ? " (осталось дней " + per.getDays() + ")\n" : per.getDays() > 0 ? " (завтра)\n" : " (сегодня)\n" );
                     }
 
                 }
             }
         }
         else{
-            List<Party> p = party.findAllByDate((long)0);
+            List<Party> p = party.findAll();
             for (Party day : p) {
                 on.append(ConvertUtils.notifyText(on.toString(), days));
                 on.append(day.getName()).append("\n");
