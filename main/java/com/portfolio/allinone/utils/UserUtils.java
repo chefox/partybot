@@ -140,6 +140,13 @@ public class UserUtils {
         out.setText("====================\nСписок дней рождения:\n====================\n"+ConvertUtils.getBirthDays(birth.findAll())).setReplyMarkup(keyboard);
 
     }
+    //Вывод полного списка для копирования
+    private static void partyes(BirthRepo birth, PartyRepo party, SendMessage out){
+        String backup="";
+        backup+="список всех внесённых мероприятий\nДни рождения:\n"+allbackup.getAllDates(birth)+"\nМеропиятия\n"+allbackup.getAllDates(party);
+        out.setText(backup).setReplyMarkup(keyboard);
+    }
+
 //подменю событий
     private static void partyes(PartyRepo party, SendMessage out){
         buttons.clear();
