@@ -11,6 +11,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 //класс личных сообщений с пользователем
@@ -158,7 +160,7 @@ public class UserUtils {
             int month = Integer.parseInt(parsedDay[parsedDay.length-1].trim())-1;
             if((month>=0 && month<12 && day>0 && day<=31)){
                 if(month==1 && day>29)throw new Exception();
-                birth.saveAndFlush(new BirthDay(in.getText().substring(0, in.getText().indexOf(" "+parsedDay[parsedDay.length-2]+" "+parsedDay[parsedDay.length-1])), month, day));
+                birth.saveAndFlush(new BirthDay(in.getText().substring(0, in.getText().indexOf(" "+parsedDay[parsedDay.length-2]+" "+parsedDay[parsedDay.length-1])), new Date(LocalDate.now().withDayOfMonth(day).withMonth(month).toEpochDay())));
             }
             else throw new Exception();
         }
@@ -208,16 +210,17 @@ public class UserUtils {
                 if(month==1 && day>29)throw new Exception();
                 year = month<now.get(Calendar.MONTH)?now.get(Calendar.YEAR)+1: now.get(Calendar.YEAR);
                 now.set(year, month, day, 23, 59, 0);
-                party.saveAndFlush(new Party(partyName==null?in.getText().substring(0, in.getText().indexOf(" "+parsedDay[parsedDay.length-2]+" "+parsedDay[parsedDay.length-1])):partyName, now.getTimeInMillis()));
+                party.saveAndFlush(new Party(partyName==null?in.getText().substring(0, in.getText().indexOf(" "+parsedDay[parsedDay.length-2]+" "+parsedDay[parsedDay.length-1])):partyName,  new Date(LocalDate.now().withDayOfMonth(day).withMonth(month).toEpochDay())));
             }
             else return false;
         }
         catch(Exception e){
 			e.printStackTrace();
-            party.saveAndFlush(new Party(in.getText(), (long)0));
+            party.saveAndFlush(new Party(in.getText(), null));
         }
         return true;
 
     }
-
+//    TODO
+//test this module in real spring app
 }
