@@ -100,7 +100,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     @Override
-    //получени изменений
+    //получение изменений
     public void onUpdateReceived(Update update) {
 
 
