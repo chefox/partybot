@@ -15,18 +15,4 @@ public interface PartyRepo extends JpaRepository<Party, Integer>
     @Transactional
     Party getByName(String Name);
 
-    //запрос для поиска в диапазоне
-    @Transactional
-    List<Party> findAllByDateBetween(Long x, Long y);
-
-    //запрос для поиска событий без даты (указывается 0)
-    @Transactional
-    List<Party> findAllByDate(Long d);
-
-
-    //запрос для скрытия прошедших дат
-    @Transactional
-    List<Party> findAllByDateAfter(Long d);
-
-
 }
